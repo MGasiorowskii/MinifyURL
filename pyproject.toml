@@ -1,0 +1,23 @@
+[tool.black]
+--line-length = 88
+target-version = ['py311']
+exclude='''
+\(
+      */migrations/*
+\)
+'''
+skip-string-normalization = true
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+balanced_wrapping = true
+line_length = 88
+skip_glob = '*/migrations/[0-9]*'
+lines_between_types = 1
+
+[tool.ruff]
+line-length = 88
+indent-width = 4

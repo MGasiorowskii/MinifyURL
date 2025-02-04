@@ -173,3 +173,6 @@ cython_debug/
 # Pycharm files
 *.iml
 .idea/
+
+# Recuirment task
+Zadanie_rekrutacyjne_Appchance_Backend.pdf
