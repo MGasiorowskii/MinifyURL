@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
 ]
 
-PROJECT_APPS = ['links']
+PROJECT_APPS = ['links', 'api']
 
 INSTALLED_APPS += PROJECT_APPS
 
