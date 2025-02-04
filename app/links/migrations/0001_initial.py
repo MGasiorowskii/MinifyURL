@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ('original', models.URLField(unique=True)),
-                ('alias', models.CharField(db_index=True, max_length=10, unique=True)),
+                ('token', models.CharField(db_index=True, max_length=10, unique=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('click_count', models.BigIntegerField(default=0)),
             ],
