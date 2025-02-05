@@ -16,3 +16,15 @@ class ShortURL(models.Model):
     @property
     def url(self):
         return f"https://{settings.DOMAIN}/{self.token}"
+
+
+class ClickLog(models.Model):
+    short_url = models.ForeignKey(
+        ShortURL, on_delete=models.CASCADE, related_name="clicks"
+    )
+    timestamp = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField()
+    user_agent = models.TextField()
+
+    def __str__(self):
+        return f"Click on {self.short_url.url} from {self.ip_address}"
