@@ -1,5 +1,5 @@
 from links.models import ShortURL
-from links.serializers import ShortURLSerializer
+from links.serializers.v1 import ShortURLSerializer
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
