@@ -9,7 +9,7 @@ def create_token(sender, instance, **kwargs):
     if not instance.token:
         while True:
             token = generate_token(instance.id)
-            if not ShortURL.objects.filter(alias=token).exists():
+            if not ShortURL.objects.filter(token=token).exists():
                 break
 
         instance.token = token
