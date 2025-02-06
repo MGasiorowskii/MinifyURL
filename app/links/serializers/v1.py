@@ -3,7 +3,7 @@ from links.models import ShortURL
 from rest_framework import serializers
 
 
-class ShortURLSerializerV1(serializers.ModelSerializer):
+class ShortenSerializerV1(serializers.ModelSerializer):
     original = serializers.URLField(validators=[URLValidator()])
 
     class Meta:

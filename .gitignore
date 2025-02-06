@@ -176,3 +176,6 @@ cython_debug/
 
 # Recuirment task
 Zadanie_rekrutacyjne_Appchance_Backend.pdf
+
+# Backup files
+backup/

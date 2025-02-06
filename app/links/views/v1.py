@@ -2,15 +2,15 @@ from django.contrib.postgres.aggregates import ArrayAgg
 from django.shortcuts import redirect
 from links import statistics
 from links.models import ShortURL
-from links.serializers.v1 import ShortURLSerializerV1, StatisticsSerializerV1
+from links.serializers.v1 import ShortenSerializerV1, StatisticsSerializerV1
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 
-class ShortURLViewSet(viewsets.GenericViewSet):
-    serializer_class = ShortURLSerializerV1
+class ShortenViewSetV1(viewsets.GenericViewSet):
+    serializer_class = ShortenSerializerV1
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
