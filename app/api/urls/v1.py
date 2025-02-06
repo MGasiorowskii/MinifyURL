@@ -1,10 +1,15 @@
 from django.urls import include, path
-from links.views.v1 import ShortURLViewSet, redirect_to_original_link
+from links.views.v1 import (
+    ShortURLViewSet,
+    StatisticsViewSetV1,
+    redirect_to_original_link,
+)
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
 router.register("shorten", ShortURLViewSet, basename="short-url")
+router.register("statistics", StatisticsViewSetV1, basename="statistics")
 
 urlpatterns = [
     path("", include(router.urls)),
