@@ -2,4 +2,3 @@ Django~=5.1.5
 djangorestframework~=3.15.2
 pre_commit~=4.1.0
 pytest-django~=4.9.0
-model-bakery~=1.20.1

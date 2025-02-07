@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from os import getenv
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -89,8 +90,7 @@ DATABASES = {
         'NAME': getenv('POSTGRES_NAME'),
         'USER': getenv('POSTGRES_USER'),
         'PASSWORD': getenv('POSTGRES_PASSWORD'),
-        # 'HOST': getenv('POSTGRES_DB', 'localhost'),
-        'HOST': 'localhost',
+        'HOST': getenv('POSTGRES_DB'),
         'PORT': getenv('POSTGRES_PORT'),
     }
 }
@@ -145,3 +145,8 @@ DOMAIN = getenv('DOMAIN')
 TOKEN_LENGTH = int(getenv('TOKEN_LENGTH'))
 SECRET_HASH_KEY = getenv('SECRET_HASH_KEY')
 HASH_BASE = int(getenv('HASH_BASE'))
+
+if not SECRET_HASH_KEY or len(SECRET_HASH_KEY) != HASH_BASE:
+    raise ImproperlyConfigured(
+        'SECRET_HASH_KEY is not set or its length is not equal to HASH_BASE.'
+    )
