@@ -95,6 +95,7 @@ DATABASES = {
     }
 }
 
+REDIS_CACHE_URL = getenv('REDIS_CACHE_URL')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -138,7 +139,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# APP SETTINGS
+# App
 DOMAIN = getenv('DOMAIN')
 
 # Token hashing
@@ -150,3 +151,6 @@ if not SECRET_HASH_KEY or len(SECRET_HASH_KEY) != HASH_BASE:
     raise ImproperlyConfigured(
         'SECRET_HASH_KEY is not set or its length is not equal to HASH_BASE.'
     )
+
+# Celery
+CELERY_BROKER_URL = getenv('CELERY_BROKER_URL')

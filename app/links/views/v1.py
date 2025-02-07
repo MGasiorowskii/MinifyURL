@@ -1,3 +1,4 @@
+from core.redis_client import redis_client as cache
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.shortcuts import redirect
 from links import statistics
@@ -33,5 +34,7 @@ class StatisticsViewSetV1(viewsets.ReadOnlyModelViewSet):
 class RedirectViewV1(views.APIView):
     def get(self, request, token):
         short_link = get_object_or_404(ShortURL, token=token)
+        cache.incr(f"clicks:{short_link.token}")
         statistics.log(request.META, short_link)
+        print(cache.get(f"clicks:{short_link.token}"))
         return redirect(short_link.original, permanent=False)

@@ -1,6 +1,19 @@
 
 name: minify
 services:
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./backup/redis:/data
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping" ]
+      interval: 5s
+      timeout: 30s
+      retries: 6
+    restart: always
+
   postgres_db:
     image: postgres:15-alpine
     ports:
