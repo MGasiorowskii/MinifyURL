@@ -1,9 +1,5 @@
 from django.urls import include, path
-from links.views.v1 import (
-    ShortenViewSetV1,
-    StatisticsViewSetV1,
-    redirect_to_original_link,
-)
+from links.views.v1 import RedirectViewV1, ShortenViewSetV1, StatisticsViewSetV1
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -15,7 +11,7 @@ urlpatterns = [
     path("", include(router.urls)),
     path(
         'redirect/<str:token>/',
-        redirect_to_original_link,
-        name='redirect-to-original-link',
+        RedirectViewV1.as_view(),
+        name='redirect-url',
     ),
 ]

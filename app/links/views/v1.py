@@ -3,8 +3,7 @@ from django.shortcuts import redirect
 from links import statistics
 from links.models import ShortURL
 from links.serializers.v1 import ShortenSerializerV1, StatisticsSerializerV1
-from rest_framework import status, viewsets
-from rest_framework.decorators import api_view
+from rest_framework import status, views, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
@@ -31,8 +30,8 @@ class StatisticsViewSetV1(viewsets.ReadOnlyModelViewSet):
     lookup_field = "token"
 
 
-@api_view(['GET'])
-def redirect_to_original_link(request, token):
-    short_link = get_object_or_404(ShortURL, token=token)
-    statistics.log(request.META, short_link)
-    return redirect(short_link.original, permanent=False)
+class RedirectViewV1(views.APIView):
+    def get(self, request, token):
+        short_link = get_object_or_404(ShortURL, token=token)
+        statistics.log(request.META, short_link)
+        return redirect(short_link.original, permanent=False)

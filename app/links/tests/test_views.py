@@ -5,7 +5,7 @@ from links.models import ShortURL
 from rest_framework import status
 
 SHORT_URL_ENDPOINT_V1 = "v1:short-url"
-REDIRECT_TO_ORIGINAL_LINK_ENDPOINT_V1 = "v1:redirect-to-original-link"
+REDIRECT_TO_ORIGINAL_LINK_ENDPOINT_V1 = "v1:redirect-url"
 STATISTICS_ENDPOINT_V1 = "v1:statistics"
 LONG_URL = "https://www.example.com"
 
