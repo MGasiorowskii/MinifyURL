@@ -139,9 +139,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # APP SETTINGS
-DOMAIN = 'mini.fy'
-TOKEN_LENGTH = 6
+DOMAIN = getenv('DOMAIN')
 
 # Token hashing
+TOKEN_LENGTH = int(getenv('TOKEN_LENGTH'))
 SECRET_HASH_KEY = getenv('SECRET_HASH_KEY')
 HASH_BASE = int(getenv('HASH_BASE'))

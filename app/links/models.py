@@ -15,7 +15,7 @@ class ShortURL(models.Model):
 
     @property
     def url(self):
-        return f"https://{settings.DOMAIN}/{self.token}"
+        return f"http://{settings.DOMAIN}/{self.token}"
 
 
 class ClickLog(models.Model):
