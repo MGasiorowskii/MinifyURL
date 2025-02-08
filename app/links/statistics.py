@@ -4,12 +4,9 @@ from links.models import ClickLog, ShortURL
 def log(request_meta_data: dict, short_link: ShortURL):
     ip_address = get_client_ip(request_meta_data)
     user_agent = request_meta_data.get("HTTP_USER_AGENT", "")
-
     ClickLog.objects.create(
         short_url=short_link, ip_address=ip_address, user_agent=user_agent
     )
-    short_link.click_count += 1
-    short_link.save(update_fields=["click_count"])
 
 
 def get_client_ip(request_meta_data):

@@ -1,4 +1,4 @@
-from core.redis_client import redis_client as cache
+from core.redis import redis_client as cache
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.shortcuts import redirect
 from links import statistics

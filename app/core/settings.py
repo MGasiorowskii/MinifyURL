@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import sys
 
 from os import getenv
 from pathlib import Path
@@ -29,6 +30,8 @@ DEBUG = getenv('DJANGO_DEBUG')
 
 ALLOWED_HOSTS = list(getenv('DJANGO_ALLOWED_HOSTS'))
 
+# App
+DOMAIN = getenv('DOMAIN')
 
 # Application definition
 
@@ -93,6 +96,10 @@ DATABASES = {
 
 REDIS_CACHE_URL = getenv('REDIS_CACHE_URL')
 
+if any('test' in arg for arg in sys.argv):
+    REDIS_CACHE_URL = REDIS_CACHE_URL.replace('/0', '/15')
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -135,9 +142,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# App
-DOMAIN = getenv('DOMAIN')
-
 # Token hashing
 TOKEN_LENGTH = int(getenv('TOKEN_LENGTH'))
 SECRET_HASH_KEY = getenv('SECRET_HASH_KEY')
@@ -152,4 +156,9 @@ if not SECRET_HASH_KEY or len(SECRET_HASH_KEY) != HASH_BASE:
 CELERY_BROKER_URL = "redis://redis:6379/1"
 CELERY_DEFAULT_QUEUE = "default_queue"
 CELERY_ROUTES = {'links.tasks.*': {'queue': CELERY_DEFAULT_QUEUE}}
-CELERY_BEAT_SCHEDULE = {}
+CELERY_BEAT_SCHEDULE = {
+    'sync-clicks-to-db': {
+        'task': 'links.tasks.sync_clicks_to_db',
+        'schedule': 60,
+    }
+}

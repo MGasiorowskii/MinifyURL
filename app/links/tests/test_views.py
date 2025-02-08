@@ -77,19 +77,19 @@ def test_redirect_view_return_404_when_link_not_exists(client):
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_redirect_view_log_clicks(client, short_url):
-    assert short_url.click_count == 0
+def test_redirect_view_log_clicks(client, mock_redis, short_url):
     assert short_url.clicks.count() == 0
 
+    key = f"clicks:{short_url.token}"
     url = reverse(REDIRECT_ENDPOINT_V1, args=(short_url.token,))
     client.get(url)
     short_url.refresh_from_db()
-    assert short_url.click_count == 1
+    assert int(mock_redis.get(key)) == 1
     assert short_url.clicks.count() == 1
 
     client.get(url)
     short_url.refresh_from_db()
-    assert short_url.click_count == 2
+    assert int(mock_redis.get(key)) == 2
     assert short_url.clicks.count() == 2
 
 
@@ -171,11 +171,10 @@ def test_num_of_queries_on_shorten_view_if_short_url_exists(
 
 def test_num_of_queries_on_redirect_view(client, short_url, django_assert_num_queries):
     url = reverse(REDIRECT_ENDPOINT_V1, args=(short_url.token,))
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(2):
         """
         1. SELECT "links_shorturl"
-        2. INSERT INTO "links_clicklog"
-        3. UPDATE "links_shorturl"
+        2. UPDATE "links_shorturl"
         """
         client.get(url)
 
