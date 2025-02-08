@@ -76,3 +76,15 @@ services:
       timeout: 30s
       retries: 6
     restart: always
+
+  tests:
+    build: .
+    env_file:
+      - .env
+    entrypoint: ["/bin/sh", "-c"]
+    working_dir: /minify/app
+    command:
+      - pytest -s -v --disable-warnings
+    depends_on:
+      - postgres_db
+      - redis
