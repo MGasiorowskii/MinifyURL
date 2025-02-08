@@ -8,11 +8,9 @@
 ✅ Configurable length of generated short links  
 ✅ Duplicate handling – returns an existing short link instead of creating a new one  
 ✅ Redirect from a short link to the original URL  
-✅ Dockerized – ready to run in a container  
-
-### 🎯 Optional Enhancements
-🔹 Link visit statistics (number of accesses)  
-🔹 User information tracking (IP, user agent)  
+✅ Dockerized – ready to run in a container
+✅ Link visit statistics (number of accesses)
+✅ User information tracking (IP, user agent)  
 
 ## 📦 Installation
 
@@ -20,56 +18,36 @@
    ```bash
    git clone https://github.com/YourGithub/MinifyURL.git
    cd MinifyURL
-   ```  
+    ```
 
-2. **Create and activate a virtual environment**  
+### 🐳 Run with Docker
+
+2. **Build and Run the containers**  
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/macOS
-   venv\Scripts\activate     # Windows
+   docker compose up
    ```  
-
-3. **Install dependencies**  
-   ```bash
-   pip install -r requirements.txt
-   ```  
-
-4. **Apply database migrations**  
-   ```bash
-   python manage.py migrate
-   ```  
-
-5. **Run the development server**  
-   ```bash
-   python manage.py runserver
-   ```  
-
-## 🐳 Run with Docker
-
-1. **Build the Docker image**  
-   ```bash
-   docker build -t minifyurl .
-   ```  
-
-2. **Run the container**  
-   ```bash
-   docker run -p 8000:8000 minifyurl
-   ```  
-
-## 📌 API Endpoints
-
-| Method  | Endpoint        | Description |
-|---------|----------------|-------------|
-| `POST`  | `/shorten/`     | Shortens the given URL |
-| `GET`   | `/r/<short_id>/` | Redirects to the original URL |
-| `GET`   | `/stats/<short_id>/` | (Optional) Retrieves link statistics |
 
 ## 🧪 Running Tests
 
-Run unit tests using:  
-```bash
-pytest
-```
+3. **Run tests**  
+   ```bash
+   docker-compose run tests
+   ```
 
-### ✨ Credits
-README created using OpenAI 🚀
+## 📌 API Endpoints
+
+| Method  | Endpoint               | Description                   |
+|---------|------------------------|-------------------------------|
+| `POST`  | `/shorten/`            | Shortens the given URL        |
+| `GET`   | `/redirect/<token>/`   | Redirects to the original URL |
+| `GET`   | `/statistics/`         | Lists link statistics         |
+| `GET`   | `/statistics/<token>/` | Retrieves link statistics     |
+
+## 📄 ADRs
+
+For further details, check out the following architectural decisions:
+
+- [ADR-001: Click Counting Method for Shortened Links](docs/architecture_decisions/001-click-counting-method.md)
+- [ADR-002: Aggregation Method for Displaying Statistics](docs/architecture_decisions/002-aggregation-method-for-statistics.md)
+- [ADR-003: Use of Celery for Asynchronous Data Logging and Redirection Performance](docs/architecture_decisions/003-use-celery-for-asynchronous-data-logging.md)
+- [ADR-004: Selection of Method for Encryption and Unique Token Generation](docs/architecture_decisions/004-method-for-encrypting-and-unique-token-generation.md)
