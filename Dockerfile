@@ -1,5 +1,5 @@
 FROM python:3.10-alpine
-WORKDIR /app
+WORKDIR /minify
 ENV PYTHONUNBUFFERED 1
 COPY requirements.txt requirements.txt
 RUN python -m pip install --upgrade pip

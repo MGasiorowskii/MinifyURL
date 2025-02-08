@@ -1,6 +1,38 @@
 
 name: minify
 services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    entrypoint: ["/bin/sh", "-c"]
+    working_dir: /minify/app
+    command:
+      - |
+        python manage.py makemigrations
+        python manage.py migrate
+        python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - redis
+      - postgres_db
+
+  celery:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - celery -A celery worker -Q ${CELERY_DEFAULT_QUEUE} --concurrency=1 --loglevel=info
+    depends_on:
+      - redis
+      - postgres_db
+
   redis:
     image: redis:7.2-alpine
     ports:
@@ -19,7 +51,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - local.env
+      - .env
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
