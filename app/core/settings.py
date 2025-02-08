@@ -152,3 +152,4 @@ if not SECRET_HASH_KEY or len(SECRET_HASH_KEY) != HASH_BASE:
 CELERY_BROKER_URL = "redis://redis:6379/1"
 CELERY_DEFAULT_QUEUE = "default_queue"
 CELERY_ROUTES = {'links.tasks.*': {'queue': CELERY_DEFAULT_QUEUE}}
+CELERY_BEAT_SCHEDULE = {}
