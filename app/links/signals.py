@@ -7,10 +7,5 @@ from links.models import ShortURL
 @receiver(post_save, sender=ShortURL)
 def create_token(sender, instance, **kwargs):
     if not instance.token:
-        while True:
-            token = base62.encode(instance.id)
-            if not ShortURL.objects.filter(token=token).exists():
-                break
-
-        instance.token = token
+        instance.token = base62.encode(instance.id)
         instance.save(update_fields=['token'])

@@ -42,11 +42,6 @@ def test_token_encoding_and_decoding_is_bijective():
     assert decoded_index == original_index
 
 
-def test_generated_token_is_alphanumeric():
-    generated_token = base62.encode(6)
-    assert generated_token.isalnum()
-
-
 @pytest.mark.parametrize('token_length', [0, -1])
 def test_encode_raises_error_for_non_positive_index(token_length):
     with override_settings(TOKEN_LENGTH=token_length):

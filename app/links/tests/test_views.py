@@ -145,14 +145,13 @@ def test_num_of_queries_on_shorten_view(
 ):
     body = {"original": LONG_URL}
     url = reverse(f'{SHORTEN_ENDPOINT_V1}-list')
-    with django_assert_num_queries(6):
+    with django_assert_num_queries(5):
         """
         1. SELECT "links_shorturl"
         2. SAVEPOINT
         3. INSERT INTO "links_shorturl"
         4. UPDATE "links_shorturl"
-        5. SELECT 1 AS "a" FROM "links_shorturl"."token"
-        6. RELEASE SAVEPOINT
+        5. RELEASE SAVEPOINT
         """
         client.post(url, body)
 
