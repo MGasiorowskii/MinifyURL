@@ -1,4 +1,5 @@
 from collections import defaultdict
+from unittest.mock import patch
 
 import pytest
 
@@ -38,6 +39,12 @@ def click_logs(short_url):
     ]
 
 
+@pytest.fixture
+def mock_log_statistics_task():
+    with patch('links.tasks.log_statistics.delay') as mock_log_statistics:
+        yield mock_log_statistics
+
+
 def test_shorten_view_create_short_url(client):
     body = {"original": LONG_URL}
     url = reverse(f'{SHORTEN_ENDPOINT_V1}-list')
@@ -59,15 +66,18 @@ def test_shorten_view_returns_short_url_if_exists(client, short_url):
     assert response.data["short_url"] == short_url.url
 
 
-def test_redirect_view_redirects(client, short_url):
+def test_redirect_view_redirects(client, short_url, mock_log_statistics_task):
     url = reverse(REDIRECT_ENDPOINT_V1, args=(short_url.token,))
     response = client.get(url)
 
     assert response.status_code == status.HTTP_302_FOUND
     assert response['Location'] == LONG_URL
+    assert mock_log_statistics_task.called
 
 
-def test_redirect_view_return_404_when_link_not_exists(client):
+def test_redirect_view_return_404_when_link_not_exists(
+    client, mock_log_statistics_task
+):
     non_existing_token = "non-existing-token"
     assert not ShortURL.objects.filter(token=non_existing_token).exists()
 
@@ -75,9 +85,12 @@ def test_redirect_view_return_404_when_link_not_exists(client):
     response = client.get(url)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert not mock_log_statistics_task.called
 
 
-def test_redirect_view_log_clicks(client, mock_redis, short_url):
+def test_redirect_view_log_clicks(
+    client, mock_redis, short_url, mock_log_statistics_task
+):
     assert short_url.clicks.count() == 0
 
     key = f"clicks:{short_url.token}"
@@ -85,12 +98,12 @@ def test_redirect_view_log_clicks(client, mock_redis, short_url):
     client.get(url)
     short_url.refresh_from_db()
     assert int(mock_redis.get(key)) == 1
-    assert short_url.clicks.count() == 1
+    assert mock_log_statistics_task.call_count == 1
 
     client.get(url)
     short_url.refresh_from_db()
     assert int(mock_redis.get(key)) == 2
-    assert short_url.clicks.count() == 2
+    assert mock_log_statistics_task.call_count == 2
 
 
 def test_statistics_list_return_blank_list_for_no_logs(client):
@@ -128,13 +141,18 @@ def test_statistics_detail_return_404_for_not_existing_token(client):
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_statistics_detail_return_aggregated_logs(client, click_logs, short_url):
+def test_statistics_detail_return_aggregated_logs(
+    client, click_logs, short_url, mock_redis
+):
+    fresh_clicks = 3
+    mock_redis.set(f"clicks:{short_url.token}", fresh_clicks)
+
     url = reverse(f'{STATISTICS_ENDPOINT_V1}-detail', args=(short_url.token,))
     response = client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data == {
-        "click_count": short_url.click_count,
+        "click_count": short_url.click_count + fresh_clicks,
         "ip_addresses": [log.ip_address for log in click_logs],
         'user_agents': [log.user_agent for log in click_logs],
     }
@@ -168,12 +186,13 @@ def test_num_of_queries_on_shorten_view_if_short_url_exists(
         client.post(url, body)
 
 
-def test_num_of_queries_on_redirect_view(client, short_url, django_assert_num_queries):
+def test_num_of_queries_on_redirect_view(
+    client, short_url, django_assert_num_queries, mock_log_statistics_task
+):
     url = reverse(REDIRECT_ENDPOINT_V1, args=(short_url.token,))
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(1):
         """
         1. SELECT "links_shorturl"
-        2. UPDATE "links_shorturl"
         """
         client.get(url)
 

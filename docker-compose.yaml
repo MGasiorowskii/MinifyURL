@@ -7,8 +7,6 @@ services:
       - "8000:8000"
     env_file:
       - .env
-    volumes:
-      - .:/app
     entrypoint: ["/bin/sh", "-c"]
     working_dir: /minify/app
     command:
@@ -17,21 +15,18 @@ services:
         python manage.py migrate
         python manage.py runserver 0.0.0.0:8000
     depends_on:
-      postgres_db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - postgres_db
+      - redis
+
 
   celery:
     build: .
     env_file:
       - .env
-    volumes:
-      - .:/app
     entrypoint: ["/bin/sh", "-c"]
     working_dir: /minify/app
     command:
-      - celery -A core worker -Q ${CELERY_DEFAULT_QUEUE} --concurrency=1 --loglevel=info
+      - celery -A core worker --concurrency=1 --loglevel=info
     depends_on:
       - redis
       - postgres_db
@@ -40,8 +35,6 @@ services:
     build: .
     env_file:
       - .env
-    volumes:
-      - .:/app
     entrypoint: ["/bin/sh", "-c"]
     working_dir: /minify/app
     command:

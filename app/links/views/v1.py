@@ -1,9 +1,9 @@
 from core.redis import redis_client as cache
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.shortcuts import redirect
-from links import statistics
 from links.models import ShortURL
 from links.serializers.v1 import ShortenSerializerV1, StatisticsSerializerV1
+from links.tasks import log_statistics
 from rest_framework import status, views, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -34,7 +34,14 @@ class StatisticsViewSetV1(viewsets.ReadOnlyModelViewSet):
 class RedirectViewV1(views.APIView):
     def get(self, request, token):
         short_link = get_object_or_404(ShortURL, token=token)
+
+        log_statistics.delay(self._serializable_meta(), short_link.id)
         cache.incr(f"clicks:{short_link.token}")
-        statistics.log(request.META, short_link)
-        print(cache.get(f"clicks:{short_link.token}"))
         return redirect(short_link.original, permanent=False)
+
+    def _serializable_meta(self):
+        return {
+            key: value
+            for key, value in self.request.META.items()
+            if isinstance(value, str)
+        }

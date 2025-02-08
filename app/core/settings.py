@@ -16,6 +16,10 @@ from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
+# from dotenv import load_dotenv
+#
+# load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -153,9 +157,7 @@ if not SECRET_HASH_KEY or len(SECRET_HASH_KEY) != HASH_BASE:
     )
 
 # Celery
-CELERY_BROKER_URL = "redis://redis:6379/1"
-CELERY_DEFAULT_QUEUE = "default_queue"
-CELERY_ROUTES = {'links.tasks.*': {'queue': CELERY_DEFAULT_QUEUE}}
+CELERY_BROKER_URL = getenv('CELERY_BROKER_URL')
 CELERY_BEAT_SCHEDULE = {
     'sync-clicks-to-db': {
         'task': 'links.tasks.sync_clicks_to_db',
