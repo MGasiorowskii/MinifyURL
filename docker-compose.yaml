@@ -15,9 +15,10 @@ services:
         python manage.py migrate
         python manage.py runserver 0.0.0.0:8000
     depends_on:
-      - postgres_db
-      - redis
-
+      postgres_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   celery:
     build: .
@@ -28,8 +29,10 @@ services:
     command:
       - celery -A core worker --concurrency=1 --loglevel=info
     depends_on:
-      - redis
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   celery-beat:
     build: .
@@ -40,8 +43,10 @@ services:
     command:
       - celery -A core beat --loglevel=info
     depends_on:
-      - redis
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   redis:
     image: redis:7.2-alpine
@@ -79,12 +84,18 @@ services:
 
   tests:
     build: .
+    profiles:
+      - tests
     env_file:
       - .env
     entrypoint: ["/bin/sh", "-c"]
     working_dir: /minify/app
     command:
-      - pytest -s -v --disable-warnings
+      - |
+        python manage.py migrate 
+        pytest -s -v --disable-warnings
     depends_on:
-      - postgres_db
-      - redis
+      postgres_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy

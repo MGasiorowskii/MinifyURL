@@ -31,7 +31,7 @@
 
 3. **Run tests**  
    ```bash
-   docker-compose run tests
+   docker compose up tests
    ```
 
 ## 📌 API Endpoints
